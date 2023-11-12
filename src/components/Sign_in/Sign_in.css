@@ -1,0 +1,63 @@
+.sign-in {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.signIn-container {
+  position: absolute;
+  background-color: rgb(255, 255, 255);
+  width: 90%;
+  max-width: 450px;
+  min-height: 300px;
+  border-radius: 1rem;
+  padding: 1rem 1.5rem;
+  text-align: center;
+}
+.signIn-container h1 {
+  margin-bottom: 2rem;
+}
+.signIn-container .name-email {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+input {
+  padding: 0.5rem 0;
+  border-radius: 0.8rem;
+  border: 1px solid rgb(186, 186, 186);
+  padding-left: 15px;
+  width: 100%;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.homepage-link,
+.signUp-link {
+  font-size: 1rem;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  background-color: #23a6d5;
+  padding: 0.6rem 0;
+  width: 110px;
+  border: none;
+  border-radius: 0.8rem;
+  cursor: pointer;
+  transition: scale 0.15s, background-color 0.15s;
+}
+.signUp-link:hover,
+.homepage-link:hover {
+  background-color: #0f759a;
+}
+.signUp-link:active,
+.homepage-link:active {
+  scale: 0.95;
+}
