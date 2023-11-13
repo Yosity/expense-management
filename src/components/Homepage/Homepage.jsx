@@ -14,13 +14,17 @@ function Homepage() {
     setActiveTab(tabName);
   };
 
+  const [history, setHistory] = useState([]);
+  const [uniqueID, setUniqueID] = useState(0);
   //Income Page variables
   const [title, setIncomeTitle] = useState("");
   const [date, setIncomeDate] = useState("");
   const [description, setIncomeDescription] = useState("");
   const [amount, setIncomeAmount] = useState(0.0);
+  //Dashboard page
   const [totalIncome, setTotalIncome] = useState(0.0);
   const [totalExpense, setTotalExpense] = useState(0.0);
+  const [totalBalance, setTotalBalance] = useState(0.0);
 
   const [incomeHistory, setIncomeHistory] = useState([]);
   const [expenseHistory, setExpenseHistory] = useState([]);
@@ -28,14 +32,23 @@ function Homepage() {
   const [dateError, setDateError] = useState(false);
   const [amountError, setAmountError] = useState(false);
   const [isNavActive, setIsNavActive] = useState(false);
+
   const handleInputChange = (event) => {
     const { id, value } = event.target;
-    if (id === "title") setIncomeTitle(value);
-    if (id === "date") setIncomeDate(value);
-    if (id === "description") setIncomeDescription(value);
-    if (id === "amount") setIncomeAmount(value.replace(/[^0-9.]/g, ""));
+    // Update the state based on the input field id
+    if (id === "income-title-input" || id === "expense-title-input") {
+      setIncomeTitle(value);
+    } else if (id === "income-date-input" || id === "expense-date-input") {
+      setIncomeDate(value);
+    } else if (
+      id === "income-description-input" ||
+      id === "expense-description-input"
+    ) {
+      setIncomeDescription(value);
+    } else if (id === "income-amount-input" || id === "expense-amount-input") {
+      setIncomeAmount(value.replace(/[^0-9.]/g, ""));
+    }
   };
-
   const checkError = () => {
     if (!title) setTitleError(true);
     else setTitleError(false);
@@ -52,12 +65,17 @@ function Homepage() {
         date: date,
         amount: parseFloat(amount),
         description: description,
+        type: "income",
+        uniqueID: uniqueID,
       };
       setIncomeHistory((prevIncomeHistory) => [
-        newIncome,
         ...prevIncomeHistory,
+        newIncome,
       ]);
+      setHistory((prevHistory) => [newIncome, ...prevHistory]);
       setTotalIncome(parseFloat(totalIncome) + parseFloat(amount));
+      setTotalBalance(parseFloat(totalBalance) + parseFloat(amount));
+      setUniqueID(uniqueID + 1);
       // setIncomeTitle("");
       // setIncomeDate("");
       // setIncomeAmount(0.0);
@@ -73,12 +91,18 @@ function Homepage() {
         date: date,
         amount: parseFloat(amount),
         description: description,
+        type: "expense",
+        uniqueID: uniqueID,
       };
       setExpenseHistory((prevExpenseHistory) => [
-        newExpense,
         ...prevExpenseHistory,
+        newExpense,
       ]);
+      setHistory((prevHistory) => [newExpense, ...prevHistory]);
       setTotalExpense(parseFloat(totalExpense) + parseFloat(amount));
+      setTotalBalance(parseFloat(totalBalance) + parseFloat(amount));
+      setUniqueID(uniqueID + 1);
+
       // setIncomeTitle("");
       // setIncomeDate("");
       // setIncomeAmount(0.0);
@@ -87,68 +111,111 @@ function Homepage() {
       checkError();
     }
   };
+
+  const handleDeletion = (event, index) => {
+    const { id } = event.target;
+    let uniqueKey = 0;
+    // Update the state based on the input field id
+    if (id === "incomeTrash") {
+      // Handle income item deletion
+      const updatedIncomeHistory = [...incomeHistory];
+      const deletedItem = updatedIncomeHistory.splice(index, 1)[0];
+      uniqueKey = deletedItem.uniqueID;
+      setIncomeHistory(updatedIncomeHistory);
+      setTotalIncome((prevTotalIncome) => prevTotalIncome - deletedItem.amount);
+      setTotalBalance(
+        (prevTotalBalance) => prevTotalBalance - deletedItem.amount
+      );
+    } else if (id === "expenseTrash") {
+      // Handle expense item deletion
+      const updatedExpenseHistory = [...expenseHistory];
+      const deletedItem = updatedExpenseHistory.splice(index, 1)[0];
+      uniqueKey = deletedItem.uniqueID;
+      setExpenseHistory(updatedExpenseHistory);
+      setTotalExpense(
+        (prevTotalExpense) => prevTotalExpense - deletedItem.amount
+      );
+      setTotalBalance(
+        (prevTotalBalance) => prevTotalBalance - deletedItem.amount
+      );
+    }
+    const updatedHistory = history.filter(
+      (item) => item.uniqueID !== uniqueKey
+    );
+    setHistory(updatedHistory);
+  };
+
   const toggleNav = () => {
     setIsNavActive(!isNavActive);
   };
   return (
     <section className="homepage">
-      <div
-        className="burger"
-        onClick={toggleNav}
-        role="button"
-        aria-label="Toggle Menu"
-      >
-        <span className="line"></span>
-        <span className="line"></span>
-        <span className="line"></span>
-      </div>
-      <nav className={isNavActive ? "active" : ""}>
-        <div className="profile-section">
-          <div className="image-name">
-            <img src={profilePic} alt="" />
-            <p>{name}</p>
-          </div>
-          <Link to="/" className="logout-link">
-            Log out
-          </Link>
-        </div>
-        <ul>
-          {/* Add onClick handlers to change the active tab */}
-          <li
-            onClick={() => handleTabChange("dashboard")}
-            className={activeTab === "dashboard" ? "active" : ""}
-          >
-            Dashboard
-          </li>
-          <li
-            onClick={() => handleTabChange("income-page")}
-            className={activeTab === "income-page" ? "active" : ""}
-          >
-            Income
-          </li>
-          <li
-            onClick={() => handleTabChange("expense-page")}
-            className={activeTab === "expense-page" ? "active" : ""}
-          >
-            Expense
-          </li>
-        </ul>
-      </nav>
       <main>
+        <div
+          onClick={toggleNav}
+          id="mask"
+          className={isNavActive ? "active" : "none"}
+        ></div>
+        <div
+          className={isNavActive ? "burger open" : "burger"}
+          onClick={toggleNav}
+          role="button"
+          aria-label="Toggle Menu"
+        >
+          <span className="line"></span>
+          <span className="line"></span>
+          <span className="line"></span>
+          <span className="line"></span>
+        </div>
+        <nav className={isNavActive ? "active" : ""}>
+          <div className="profile-section">
+            <div className="image-name">
+              <img src={profilePic} alt="" />
+              <p>{name}</p>
+            </div>
+            <Link to="/" className="logout-link">
+              Log out
+            </Link>
+          </div>
+          <ul>
+            {/* Add onClick handlers to change the active tab */}
+            <li
+              onClick={() => handleTabChange("dashboard")}
+              className={activeTab === "dashboard" ? "active" : ""}
+            >
+              Dashboard
+            </li>
+            <li
+              onClick={() => handleTabChange("income-page")}
+              className={activeTab === "income-page" ? "active" : ""}
+            >
+              Income
+            </li>
+            <li
+              onClick={() => handleTabChange("expense-page")}
+              className={activeTab === "expense-page" ? "active" : ""}
+            >
+              Expense
+            </li>
+          </ul>
+        </nav>
         {activeTab === "dashboard" && ( // Render if activeTab is "dashboard"
-          <section className="dashboard">
+          <section id="dashboard">
             <h1>Dashboard</h1>
             <div className="dashboard-content">
-              <div className="graph-income">
-                <div className="income">
-                  <p className="income-amount">
-                    Total Income<span>0,00$</span>
+              <div className="graph-data">
+                <div className="data">
+                  <p className="data-amount">
+                    Total Income
+                    <span>{totalIncome.toLocaleString("en-US")} $</span>
                   </p>
-                  <p className="balance-amount">
-                    Total Balance<span>0,00$</span>
+                  <p className="data-amount">
+                    Total Balance
+                    <span>{totalBalance.toLocaleString("en-US")} $</span>
                   </p>
-                  <p className="expense-amount">
-                    Total Expense <span>0,00$</span>
+                  <p className="data-amount">
+                    Total Expense{" "}
+                    <span>{totalExpense.toLocaleString("en-US")} $</span>
                   </p>
                 </div>
                 <div className="graph"></div>
@@ -157,52 +224,36 @@ function Homepage() {
               <div className="history-container">
                 <h2>Recent History</h2>
                 <ul className="history">
-                  <li>
-                    <p>
-                      Title <br />
-                      <span>11/08/2023</span>
-                    </p>
+                  {history.map((element, index) => (
+                    <li key={index}>
+                      <p
+                        className={
+                          element.type === "income" ? "dIncome" : "dExpense"
+                        }
+                      >
+                        {element.title} <br />
+                        <span>{element.date}</span>
+                      </p>
 
-                    <span>0.00$</span>
-                  </li>
-                  <li>
-                    <p>
-                      Title <br />
-                      <span>11/08/2023</span>
-                    </p>
-
-                    <span>0.00$</span>
-                  </li>
-                  <li>
-                    <p>
-                      Title <br />
-                      <span>11/08/2023</span>
-                    </p>
-
-                    <span>0.00$</span>
-                  </li>
-                  <li>
-                    <p>
-                      Title <br />
-                      <span>11/08/2023</span>
-                    </p>
-
-                    <span>0.00$</span>
-                  </li>
+                      <span>{element.amount.toLocaleString("en-US")} $</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
           </section>
         )}
         {activeTab === "income-page" && ( // Render if activeTab is "income-page"
-          <section className="income-page">
+          <section id="income-page">
             <div className="income-content">
-              <h2 className="amount">Total Income : {totalIncome}$</h2>
+              <h2 className="amount">
+                Total Income : {totalIncome.toLocaleString("en-US")}$
+              </h2>
               <div className="income-subcontainer">
                 <div className="income-input">
                   <input
                     type="text"
-                    id="income-title"
+                    id="income-title-input"
                     value={title}
                     placeholder="Title"
                     onChange={handleInputChange}
@@ -210,7 +261,7 @@ function Homepage() {
                   />
                   <input
                     type="date"
-                    id="income-date"
+                    id="income-date-input"
                     value={date}
                     placeholder="Date"
                     onChange={handleInputChange}
@@ -218,7 +269,7 @@ function Homepage() {
                   />
                   <input
                     type="text"
-                    id="income-amount"
+                    id="income-amount-input"
                     value={amount === 0 ? "" : amount}
                     placeholder="amount"
                     onInput={(e) => {
@@ -228,7 +279,7 @@ function Homepage() {
                     className={amountError ? "error" : "valid"}
                   />
                   <textarea
-                    id="income-description"
+                    id="income-description-input"
                     rows="4"
                     cols="50"
                     placeholder="Description (Optional)"
@@ -237,21 +288,40 @@ function Homepage() {
                   ></textarea>
                   <button onClick={addIncome}>Add Income</button>
                 </div>
-                <div className="income-history-container">
+                <div className="income-history">
                   <h2>Recent History</h2>
-                  <ul className="income-history">
+                  <ul>
                     {incomeHistory.map((income, index) => (
                       <li key={index}>
                         <div className="cell-description">
-                          <span id="income-title">{income.title}</span>
                           <div className="cell-subdescription">
-                            <span id="income-date">{`${income.date}`}</span>
-                            <span id="income-amount">{`${income.amount}$`}</span>
-                            <span id="income-description">{`${income.description}`}</span>
+                            <span className="title" id="income-title">
+                              {income.title}
+                            </span>
+                            <div className="money-date">
+                              <span
+                                className="money"
+                                id="income-amount"
+                              >{`${income.amount.toLocaleString(
+                                "en-US"
+                              )} $`}</span>
+                              <span
+                                className="hdate"
+                                id="income-date"
+                              >{`${income.date}`}</span>
+                            </div>
                           </div>
+                          <span
+                            className="description"
+                            id="income-description"
+                          >{`${income.description}`}</span>
                         </div>
 
-                        <i class="fa-solid fa-trash trashcan"></i>
+                        <i
+                          onClick={(event) => handleDeletion(event, index)}
+                          id="incomeTrash"
+                          className="fa-solid fa-trash trashcan"
+                        ></i>
                       </li>
                     ))}
                   </ul>
@@ -261,22 +331,24 @@ function Homepage() {
           </section>
         )}
         {activeTab === "expense-page" && ( // Render if activeTab is "expense-page"
-          <section className="expense-page">
+          <section id="expense-page">
             <div className="expense-content">
-              <h2 className="amount">Total Expense : {totalExpense}$</h2>
+              <h2 className="amount">
+                Total Expense : {totalExpense.toLocaleString("en-US")}$
+              </h2>
               <div className="expense-subcontainer">
                 <div className="expense-input">
                   <input
                     type="text"
-                    id="expense-title"
+                    id="expense-title-input"
                     value={title}
                     placeholder="Title"
                     onChange={handleInputChange}
                     className={titleError ? "error" : "valid"}
                   />
                   <input
-                    type="expense-date"
-                    id="date"
+                    type="date"
+                    id="expense-date-input"
                     value={date}
                     placeholder="Date"
                     onChange={handleInputChange}
@@ -284,7 +356,7 @@ function Homepage() {
                   />
                   <input
                     type="text"
-                    id="expense-amount"
+                    id="expense-amount-input"
                     value={amount === 0 ? "" : amount}
                     placeholder="amount"
                     onInput={(e) => {
@@ -294,7 +366,7 @@ function Homepage() {
                     className={amountError ? "error" : "valid"}
                   />
                   <textarea
-                    id="expense-description"
+                    id="expense-description-input"
                     rows="4"
                     cols="50"
                     placeholder="Description (Optional)"
@@ -303,21 +375,40 @@ function Homepage() {
                   ></textarea>
                   <button onClick={addExpense}>Add Expense</button>
                 </div>
-                <div className="expense-history-container">
+                <div className="expense-history">
                   <h2>Recent History</h2>
-                  <ul className="expense-history">
+                  <ul>
                     {expenseHistory.map((income, index) => (
                       <li key={index}>
                         <div className="cell-description">
-                          <span id="expense-title">{income.title}</span>
                           <div className="cell-subdescription">
-                            <span id="expense-date">{`${income.date}`}</span>
-                            <span id="expense-amount">{`${income.amount}$`}</span>
-                            <span id="expense-description">{`${income.description}`}</span>
+                            <span className="title" id="expense-title">
+                              {income.title}
+                            </span>
+                            <div className="money-date">
+                              <span
+                                className="money"
+                                id="expense-amount"
+                              >{`${income.amount.toLocaleString(
+                                "en-US"
+                              )} $`}</span>
+                              <span
+                                className="hdate"
+                                id="expense-date"
+                              >{`${income.date}`}</span>
+                            </div>
                           </div>
+                          <span
+                            className="description"
+                            id="expense-description"
+                          >{`${income.description}`}</span>
                         </div>
 
-                        <i class="fa-solid fa-trash trashcan"></i>
+                        <i
+                          onClick={(event) => handleDeletion(event, index)}
+                          id="expenseTrash"
+                          class="fa-solid fa-trash trashcan"
+                        ></i>
                       </li>
                     ))}
                   </ul>
