@@ -13,7 +13,7 @@ function Sign_up() {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!name || !email || !password) alert("Please fill the inputs !");
     else if (emailPattern.test(email)) {
-      history("/sign-in", {
+      history("/expense-management/sign-in", {
         state: { name: name, email: email, password: password },
       });
       alert(`email : ${email} \npassword : ${password}`);
@@ -54,13 +54,13 @@ function Sign_up() {
             Register
           </button>
           <p>already have an account ?</p>
-          <Link to="/sign-in" className="signIn-link">
+          <Link to="/expense-management/sign-in" className="signIn-link">
             Log in
           </Link>
         </div>
       </div>
       <Routes>
-        <Route path="/sign-in" element={<Sign_in />} />
+        <Route path="/expense-management/sign-in" element={<Sign_in />} />
       </Routes>
     </section>
   );

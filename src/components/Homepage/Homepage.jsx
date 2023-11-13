@@ -173,7 +173,7 @@ function Homepage() {
               <img src={profilePic} alt="" />
               <p>{name}</p>
             </div>
-            <Link to="/" className="logout-link">
+            <Link to="/expense-management/" className="logout-link">
               Log out
             </Link>
           </div>
