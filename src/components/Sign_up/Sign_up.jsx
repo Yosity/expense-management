@@ -13,7 +13,7 @@ function Sign_up() {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!name || !email || !password) alert("Please fill the inputs !");
     else if (emailPattern.test(email)) {
-      history("/expense-management/sign-in", {
+      history("/sign-in", {
         state: { name: name, email: email, password: password },
       });
       alert(`email : ${email} \npassword : ${password}`);
@@ -31,7 +31,7 @@ function Sign_up() {
             type="text"
             placeholder="username"
             required
-            maxlength="20"
+            maxLength="20"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -54,13 +54,20 @@ function Sign_up() {
             Register
           </button>
           <p>already have an account ?</p>
-          <Link to="/expense-management/sign-in" className="signIn-link">
+          <button
+            onClick={() => {
+              history("/sign-in", {
+                state: { name: name, email: email, password: password },
+              });
+            }}
+            className="signIn-link"
+          >
             Log in
-          </Link>
+          </button>
         </div>
       </div>
       <Routes>
-        <Route path="/expense-management/sign-in" element={<Sign_in />} />
+        <Route path="/sign-in" element={<Sign_in />} />
       </Routes>
     </section>
   );

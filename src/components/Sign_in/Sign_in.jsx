@@ -9,7 +9,7 @@ function Sign_in() {
   const [inputPassword, setPassword] = useState("");
   const handleSignIn = () => {
     if (inputEmail !== "" && inputEmail === email && inputPassword === password)
-      navigatTo("/expense-management/homepage", {
+      navigatTo("/homepage", {
         state: { name: name },
       });
     else
@@ -40,7 +40,7 @@ function Sign_in() {
             Log in
           </button>
           <p>Dont have an account ?</p>
-          <Link to="/expense-management/" className="signUp-link">
+          <Link to="/sign-up" className="signUp-link">
             Sign up
           </Link>
         </div>
