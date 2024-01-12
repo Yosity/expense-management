@@ -390,6 +390,7 @@ function Homepage() {
                         Seç
                       </option>
                       <option value="all">Tüm Kategoriler</option>
+                      <option value="Business">Business</option>
                       <option value="Market">Market</option>
                       <option value="Fatura">Fatura</option>
                       <option value="Borç">Borç</option>
@@ -435,7 +436,7 @@ function Homepage() {
                     onChange={(e) => setCategory(e.target.value)}
                   >
                     <option value="Diğer">Diğer</option>
-                    <option value="Market">Market</option>
+                    <option value="Business">Business</option>
                     <option value="Fatura">Fatura</option>
                     <option value="Borç">Borç</option>
                   </select>
@@ -533,6 +534,7 @@ function Homepage() {
                     onChange={(e) => setCategory(e.target.value)}
                   >
                     <option value="Diğer">Diğer</option>
+                    <option value="Business">Business</option>
                     <option value="Market">Market</option>
                     <option value="Fatura">Fatura</option>
                     <option value="Borç">Borç</option>
