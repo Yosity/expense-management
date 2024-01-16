@@ -1,5 +1,5 @@
 import "./Homepage.css";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import profilePic from "./profile-pic.png";
 import { useState, useEffect } from "react"; // Import useState from React
 
@@ -8,8 +8,9 @@ import { Line } from "react-chartjs-2";
 import moment from "moment";
 
 function Homepage() {
+  const navigatTo = useNavigate();
   const { state } = useLocation();
-  const { name } = state;
+  const { name, email, password } = state;
   // Define a state variable to keep track of the active tab
   const [activeTab, setActiveTab] = useState("dashboard");
 
@@ -87,9 +88,9 @@ function Homepage() {
       setTotalIncome(parseFloat(totalIncome) + parseFloat(amount));
       setTotalBalance(parseFloat(totalBalance) + parseFloat(amount));
       setUniqueID(uniqueID + 1);
-      // setIncomeTitle("");
-      // setIncomeDate("");
-      // setIncomeAmount(0.0);
+      setIncomeTitle("");
+      setIncomeDate("");
+      setIncomeAmount(0.0);
     } else {
       alert("Please provide Essential Inputs");
       checkError();
@@ -115,9 +116,9 @@ function Homepage() {
       setTotalBalance(parseFloat(totalBalance) - parseFloat(amount));
       setUniqueID(uniqueID + 1);
 
-      // setIncomeTitle("");
-      // setIncomeDate("");
-      // setIncomeAmount(0.0);
+      setIncomeTitle("");
+      setIncomeDate("");
+      setIncomeAmount(0.0);
     } else {
       alert("Please provide Essential Inputs");
       checkError();
@@ -188,6 +189,41 @@ function Homepage() {
   const toggleNav = () => {
     setIsNavActive(!isNavActive);
   };
+
+  useEffect(() => {
+    const storedData = JSON.parse(sessionStorage.getItem("user_data")) || {};
+    // Set the state based on the data retrieved from localStorage
+    setHistory(storedData.history || []);
+    setUniqueID(storedData.uniqueID || 0);
+    setTotalIncome(storedData.totalIncome || 0.0);
+    setTotalExpense(storedData.totalExpense || 0.0);
+    setTotalBalance(storedData.totalBalance || 0.0);
+    setIncomeHistory(storedData.incomeHistory || []);
+    setExpenseHistory(storedData.expenseHistory || []);
+    console.log("Data retrieved", storedData);
+  }, []);
+
+  // Save data to localStorage whenever there is an update
+  useEffect(() => {
+    const userData = {
+      history,
+      uniqueID,
+      totalIncome,
+      totalExpense,
+      totalBalance,
+      incomeHistory,
+      expenseHistory,
+    };
+    sessionStorage.setItem("user_data", JSON.stringify(userData));
+  }, [
+    history,
+    uniqueID,
+    totalIncome,
+    totalExpense,
+    totalBalance,
+    incomeHistory,
+    expenseHistory,
+  ]);
 
   const monthlyData = history.reduce((data, item) => {
     const month = moment(item.date).format("MMM YYYY");
@@ -270,9 +306,17 @@ function Homepage() {
               <img src={profilePic} alt="" />
               <p>{name}</p>
             </div>
-            <Link to="/expense-management/" className="logout-link">
+            <button
+              className="logout-link"
+              onClick={() => {
+                console.log("Navigating to /sign-in");
+                navigatTo("/sign-in", {
+                  state: { name: name, email: email, password: password },
+                });
+              }}
+            >
               Log out
-            </Link>
+            </button>
           </div>
           <ul>
             {/* Add onClick handlers to change the active tab */}

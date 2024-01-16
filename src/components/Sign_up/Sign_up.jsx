@@ -1,5 +1,5 @@
 import "./Sign_up.css";
-import { Route, Routes, Link, useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import Sign_in from "../Sign_in/Sign_in";
 import { useState } from "react";
 

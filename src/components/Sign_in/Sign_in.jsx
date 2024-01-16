@@ -1,7 +1,7 @@
 import "./Sign_in.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-function Sign_in() {
+function Sign_in(props) {
   const { state } = useLocation();
   const navigatTo = useNavigate();
   const { name, email, password } = state;
@@ -10,7 +10,7 @@ function Sign_in() {
   const handleSignIn = () => {
     if (inputEmail !== "" && inputEmail === email && inputPassword === password)
       navigatTo("/homepage", {
-        state: { name: name },
+        state: { name: name, email: email, password: password },
       });
     else
       alert(
